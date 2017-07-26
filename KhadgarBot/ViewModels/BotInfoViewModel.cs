@@ -1,4 +1,5 @@
 ﻿using KhadgarBot.Models;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace KhadgarBot.ViewModels
             var botPass = root.Descendants("pass").First().Value;
 
             Model = new BotInfo { BotName = botNickname, ChannelName = "ciarenni", OAuth = botPass };
+            LockBotInfo = new DelegateCommand(ExecuteLockBotInfo);
         }
 
         #endregion
@@ -37,6 +39,13 @@ namespace KhadgarBot.ViewModels
         #endregion
 
         #region Commands
+
+        public DelegateCommand LockBotInfo { get; set; }
+
+        public void ExecuteLockBotInfo()
+        {
+
+        }
 
         #endregion
 

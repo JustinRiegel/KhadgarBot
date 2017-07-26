@@ -59,7 +59,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\TabNameConverter.cs" />
+    <Compile Include="Enums\TabNameEnum.cs" />
     <Compile Include="Models\BotInfo.cs" />
+    <Compile Include="Models\KhadgarBotModel.cs" />
     <Compile Include="ViewModels\BotAdminViewModel.cs" />
     <Compile Include="ViewModels\CommandLogViewModel.cs" />
     <Compile Include="ViewModels\KhadgarBotViewModel.cs" />
