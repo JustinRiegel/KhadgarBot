@@ -1,8 +1,15 @@
-﻿using System.Windows;
+﻿using System.ComponentModel.Composition;
+using System.Windows;
 
 namespace KhadgarBot.ViewModels
 {
-    class CommandLogViewModel : DependencyObject
+    [Export]
+    [PartCreationPolicy(CreationPolicy.NonShared)]
+    public class CommandLogViewModel : DependencyObject
     {
+        public CommandLogViewModel(KhadgarBotViewModel khadgarBotViewModel)
+        {
+            
+        }
     }
 }

@@ -11,10 +11,9 @@
              d:DataContext="{d:DesignInstance viewModels:KhadgarBotViewModel}">
     <UserControl.Resources>
         <converters:TabNameConverter x:Key="TabNameConverter" />
-        <!--<converters:TabNameConverter x:Key="TabNameConverter"/>-->
     </UserControl.Resources>
     <Grid>
-        <TabControl SelectedIndex="{Binding SelectedTabName, Converter={StaticResource TabNameConverter}, UpdateSourceTrigger=PropertyChanged}">
+        <TabControl SelectedIndex="{Binding SelectedTabIndex, Converter={StaticResource TabNameConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <TabItem Header="Bot Panel">
                 <views:BotInfoView DataContext="{Binding BotInfoView}"/>
             </TabItem>

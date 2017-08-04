@@ -1,22 +1,20 @@
-﻿using Prism.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using KhadgarBot.Enums;
+using Prism.Commands;
 
 namespace KhadgarBot.ViewModels
 {
     //possible functionality:
     //death counter, resets on stream death
     //timer, mod level
-    class KhadgarBotViewModel : DependencyObject
+    public class KhadgarBotViewModel : DependencyObject
     {
         #region Members
-
-        private TabNameEnum TabName = new TabNameEnum();
 
         #endregion
 
@@ -24,10 +22,10 @@ namespace KhadgarBot.ViewModels
 
         public KhadgarBotViewModel()
         {
-            BotInfoView = new BotInfoViewModel();
-            BotAdminView = new BotAdminViewModel();
-            CommandLogView = new CommandLogViewModel();
-            ChangeTabCallback = new DelegateCommand<TabNameEnum>(ExecuteChangeTab);
+            BotInfoView = new BotInfoViewModel(this);
+            BotAdminView = new BotAdminViewModel(this);
+            CommandLogView = new CommandLogViewModel(this);
+            ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
         }
 
         #endregion
@@ -38,24 +36,24 @@ namespace KhadgarBot.ViewModels
         public BotAdminViewModel BotAdminView { get; set; }
         public CommandLogViewModel CommandLogView { get; set; }
         
-        public TabNameEnum SelectedTabName
+        public TabNameEnum SelectedTabIndex
         {
-            get { return (TabNameEnum)GetValue(SelectedTabNameProperty); }
-            set { SetValue(SelectedTabNameProperty, value); }
+            get { return (TabNameEnum)GetValue(SelectedTabIndexProperty); }
+            set { SetValue(SelectedTabIndexProperty, value); }
         }
 
-        private static readonly DependencyProperty SelectedTabNameProperty =
-            DependencyProperty.Register("SelectedTabName", typeof(TabNameEnum), typeof(KhadgarBotViewModel), new PropertyMetadata(TabNameEnum.BotInfo));
+        private static readonly DependencyProperty SelectedTabIndexProperty =
+            DependencyProperty.Register("SelectedTabIndex", typeof(TabNameEnum), typeof(KhadgarBotViewModel), new PropertyMetadata(TabNameEnum.BotInfo));
 
         #endregion
 
         #region Commands
 
-        public DelegateCommand<TabNameEnum> ChangeTabCallback { get; set; }
+        public DelegateCommand<object> ChangeTabCallback { get; set; }
 
-        public void ExecuteChangeTab(TabNameEnum tabName)
+        public void ExecuteChangeTab(object selectedIndex)
         {
-            SelectedTabName = tabName;
+            SelectedTabIndex = (TabNameEnum)selectedIndex;
         }
 
         #endregion

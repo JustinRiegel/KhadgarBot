@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.ComponentModel.Composition;
+using System.Windows.Controls;
 using KhadgarBot.ViewModels;
 
 namespace KhadgarBot.Views
@@ -6,12 +7,20 @@ namespace KhadgarBot.Views
     /// <summary>
     /// Interaction logic for BotInfoView.xaml
     /// </summary>
+    [Export("BotInfoView")]
+    [PartCreationPolicy(CreationPolicy.NonShared)]
     public partial class BotInfoView : UserControl
     {
         public BotInfoView()
         {
             InitializeComponent();
-            DataContext = new BotInfoViewModel();
+        }
+
+        [Import]
+        public BotInfoViewModel ViewModel
+        {
+            get { return (BotInfoViewModel)DataContext; }
+            set { DataContext = value; }
         }
     }
 }

@@ -13,13 +13,12 @@ namespace KhadgarBot.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.ToString();
+            return (int) value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var temp = (TabNameEnum)Enum.Parse(typeof(TabNameEnum), value.ToString());
-            return temp;
+            return (TabNameEnum)Enum.Parse(typeof(TabNameEnum), value.ToString());
         }
     }
 }

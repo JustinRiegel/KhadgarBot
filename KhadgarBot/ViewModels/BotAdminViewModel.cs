@@ -1,8 +1,15 @@
-﻿using System.Windows;
+﻿using System.ComponentModel.Composition;
+using System.Windows;
 
 namespace KhadgarBot.ViewModels
 {
-    class BotAdminViewModel : DependencyObject
+    [Export]
+    [PartCreationPolicy(CreationPolicy.NonShared)]
+    public class BotAdminViewModel : DependencyObject
     {
+        public BotAdminViewModel(KhadgarBotViewModel khadgarBotViewModel)
+        {
+            
+        }
     }
 }
