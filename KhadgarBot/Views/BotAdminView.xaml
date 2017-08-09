@@ -16,6 +16,6 @@
             <RowDefinition Height="Auto"/> 
         </Grid.RowDefinitions>
 
-        <Button Grid.Column="0" Grid.Row="0" Content="Connect to the "/>
+        <Button Grid.Column="0" Grid.Row="0" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"/>
     </Grid>
 </UserControl>

@@ -5,11 +5,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TwitchLib;
+using TwitchLib.Events.Client;
+using TwitchLib.Models.Client;
 
 namespace KhadgarBot.Models
 {
     public class BotInfo : DependencyObject
     {
+        #region Members
+
+        #endregion
+
+        #region Constructor
+
+        public BotInfo(string botNickname, string botPass, string channelName)
+        {
+            BotName = botNickname;
+            OAuth = botPass;
+            ChannelName = channelName;
+        }
+
+        #endregion
+
         #region Properties
 
         public string BotName
@@ -37,6 +55,33 @@ namespace KhadgarBot.Models
         public static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register("ChannelName", typeof(string), typeof(BotInfo), new PropertyMetadata(default(string)));
 
         #endregion
+
+        #endregion
+
+        #region Commands
+
+        public void ConnectToTwitch()
+        {
+            Client.OnJoinedChannel += onJoinedChannel;
+            Client.Connect();
+        }
+
+        public void JoinChannel(string channelName)
+        {
+            Client.JoinChannel(channelName);
+        }
+
+        public void LeaveChannel(string channelName)
+        {
+            Client.LeaveChannel(channelName);
+        }
+
+        private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
+        {
+            Dispatcher.Invoke(new Action(() => {
+                Client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
+            }));
+        }
 
         #endregion
     }

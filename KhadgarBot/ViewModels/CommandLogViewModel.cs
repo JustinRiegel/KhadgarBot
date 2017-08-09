@@ -7,6 +7,7 @@ namespace KhadgarBot.ViewModels
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class CommandLogViewModel : DependencyObject
     {
+        [ImportingConstructor]
         public CommandLogViewModel(KhadgarBotViewModel khadgarBotViewModel)
         {
             
