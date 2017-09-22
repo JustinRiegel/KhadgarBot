@@ -58,31 +58,6 @@ namespace KhadgarBot.Models
 
         #endregion
 
-        #region Commands
-
-        public void ConnectToTwitch()
-        {
-            Client.OnJoinedChannel += onJoinedChannel;
-            Client.Connect();
-        }
-
-        public void JoinChannel(string channelName)
-        {
-            Client.JoinChannel(channelName);
-        }
-
-        public void LeaveChannel(string channelName)
-        {
-            Client.LeaveChannel(channelName);
-        }
-
-        private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
-        {
-            Dispatcher.Invoke(new Action(() => {
-                Client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
-            }));
-        }
-
-        #endregion
+        
     }
 }

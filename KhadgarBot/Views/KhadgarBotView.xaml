@@ -14,10 +14,7 @@
     </UserControl.Resources>
     <Grid>
         <TabControl SelectedIndex="{Binding SelectedTabIndex, Converter={StaticResource TabNameConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-            <TabItem Header="Bot Panel">
-                <views:BotInfoView DataContext="{Binding BotInfoView}"/>
-            </TabItem>
-            <TabItem Header="Bot Admin">
+            <TabItem Header="Bot Admin Panel">
                 <views:BotAdminView DataContext="{Binding BotAdminView}"/>
             </TabItem>
             <TabItem Header="Command log">

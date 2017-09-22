@@ -79,28 +79,19 @@
     </ApplicationDefinition>
     <Compile Include="Converters\TabNameConverter.cs" />
     <Compile Include="Enums\TabNameEnum.cs" />
-    <Compile Include="Models\BotInfo.cs" />
     <Compile Include="Models\KhadgarBotModel.cs" />
-    <Compile Include="ViewModels\BotAdminViewModel.cs" />
     <Compile Include="ViewModels\CommandLogViewModel.cs" />
     <Compile Include="ViewModels\KhadgarBotViewModel.cs" />
-    <Compile Include="ViewModels\BotInfoViewModel.cs" />
-    <Compile Include="Views\BotAdminView.xaml.cs">
-      <DependentUpon>BotAdminView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModels\BotAdminViewModel.cs" />
     <Compile Include="Views\CommandLogView.xaml.cs">
       <DependentUpon>CommandLogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KhadgarBotView.xaml.cs">
       <DependentUpon>KhadgarBotView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\BotInfoView.xaml.cs">
-      <DependentUpon>BotInfoView.xaml</DependentUpon>
+    <Compile Include="Views\BotAdminView.xaml.cs">
+      <DependentUpon>BotAdminView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Views\BotAdminView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\CommandLogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -121,7 +112,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\BotInfoView.xaml">
+    <Page Include="Views\BotAdminView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

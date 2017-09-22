@@ -3,19 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:KhadgarBot.Views"
              xmlns:viewModels="clr-namespace:KhadgarBot.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:BotAdminViewModel}">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> 
-        </Grid.RowDefinitions>
+        <Grid><!--IsEnabled="{Binding BotInfoLocked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <!-- the long term plan is to let the name and oauth be entered on this view and thus be able to be used for any bot -->
+            <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource LabelStyle}" Text="Bot name: "/>
+            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Model.BotName, Mode=OneWay}" IsEnabled="False" Width="100"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource LabelStyle}" Text="OAuth: "/>
+            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Model.OAuth, Mode=OneWay}" IsEnabled="False" Width="100"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelStyle}" Text="Channel name: " />
+            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
 
-        <Button Grid.Column="0" Grid.Row="0" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"/>
+            <Button Grid.Column="0" Grid.Row="3" Content="Confirm bot info" Command="{Binding LockBotInfo}"/>
+            <Button Grid.Column="0" Grid.Row="4" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"/>
+        </Grid>
     </Grid>
 </UserControl>

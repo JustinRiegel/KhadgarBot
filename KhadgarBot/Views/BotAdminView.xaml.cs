@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.Composition;
-using KhadgarBot.ViewModels;
 using System.Windows.Controls;
+using KhadgarBot.ViewModels;
 
 namespace KhadgarBot.Views
 {

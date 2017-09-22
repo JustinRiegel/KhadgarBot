@@ -2,8 +2,7 @@
 {
     public enum TabNameEnum
     {
-        BotInfo = 0,
-        BotAdmin = 1,
-        CommandLog = 2
+        BotAdmin = 0,
+        CommandLog = 1
     }
 }

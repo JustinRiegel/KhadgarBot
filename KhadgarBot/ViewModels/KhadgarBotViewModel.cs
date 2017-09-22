@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,21 +29,25 @@ namespace KhadgarBot.ViewModels
         [ImportingConstructor]
         public KhadgarBotViewModel()
         {
-            BotInfoView = new BotInfoViewModel(this);
+            //grab the bot's login info from an xml file so sensitive info isn't publically posted
+            var xmlLoginInfo = XDocument.Load(@"..\..\Resources\loginInfo.xml");
+            var root = xmlLoginInfo.Descendants("root");
+            var botNickname = root.Descendants("nick").First().Value;
+            var botOAuth= root.Descendants("pass").First().Value;
+
             BotAdminView = new BotAdminViewModel(this);
             CommandLogView = new CommandLogViewModel(this);
             ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
 
             //TODO combine the bot info and bot admin objects, there's no reason to separate them
-            Credentials = new ConnectionCredentials(BotName, OAuth);
-            Client = new TwitchClient(Credentials, ChannelName);
+            Credentials = new ConnectionCredentials(botNickname, botOAuth);
+            Client = new TwitchClient(Credentials);
         }
 
         #endregion
 
         #region Properties
 
-        public BotInfoViewModel BotInfoView { get; set; }
         public BotAdminViewModel BotAdminView { get; set; }
         public CommandLogViewModel CommandLogView { get; set; }
 
@@ -64,7 +69,7 @@ namespace KhadgarBot.ViewModels
             set { SetValue(SelectedTabIndexProperty, value); }
         }
 
-        private static readonly DependencyProperty SelectedTabIndexProperty = DependencyProperty.Register("SelectedTabIndex", typeof(TabNameEnum), typeof(KhadgarBotViewModel), new PropertyMetadata(TabNameEnum.BotInfo));
+        private static readonly DependencyProperty SelectedTabIndexProperty = DependencyProperty.Register("SelectedTabIndex", typeof(TabNameEnum), typeof(KhadgarBotViewModel), new PropertyMetadata(TabNameEnum.BotAdmin));
         private static readonly DependencyProperty ClientProperty = DependencyProperty.Register("Client", typeof(TwitchClient), typeof(KhadgarBotViewModel));
         private static readonly DependencyProperty CredentialsProperty = DependencyProperty.Register("Credentials", typeof(ConnectionCredentials), typeof(KhadgarBotViewModel));
 
