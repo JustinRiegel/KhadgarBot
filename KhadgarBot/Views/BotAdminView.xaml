@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:KhadgarBot.ViewModels"
+             xmlns:models="clr-namespace:KhadgarBot.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:BotAdminViewModel}">
@@ -23,9 +24,9 @@
             </Grid.RowDefinitions>
             <!-- the long term plan is to let the name and oauth be entered on this view and thus be able to be used for any bot -->
             <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource LabelStyle}" Text="Bot name: "/>
-            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Model.BotName, Mode=OneWay}" IsEnabled="False" Width="100"/>
+            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding BotName, Mode=OneWay}" IsEnabled="False" Width="100"/>
             <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource LabelStyle}" Text="OAuth: "/>
-            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Model.OAuth, Mode=OneWay}" IsEnabled="False" Width="100"/>
+            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding OAuth, Mode=OneWay}" IsEnabled="False" Width="100"/>
             <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelStyle}" Text="Channel name: " />
             <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
 

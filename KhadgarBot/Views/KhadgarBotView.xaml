@@ -15,10 +15,10 @@
     <Grid>
         <TabControl SelectedIndex="{Binding SelectedTabIndex, Converter={StaticResource TabNameConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <TabItem Header="Bot Admin Panel">
-                <views:BotAdminView DataContext="{Binding BotAdminView}"/>
+                <views:BotAdminView DataContext="{Binding BotAdminViewModel}"/>
             </TabItem>
             <TabItem Header="Command log">
-                <views:CommandLogView DataContext="{Binding CommandLogView}"/>
+                <views:CommandLogView DataContext="{Binding CommandLogViewModel}"/>
             </TabItem>
         </TabControl>
     </Grid>

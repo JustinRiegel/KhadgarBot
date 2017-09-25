@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using KhadgarBot.Enums;
 using Prism.Commands;
-using TwitchLib;
-using TwitchLib.Models.Client;
 using System.ComponentModel.Composition;
+using KhadgarBot.Models;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace KhadgarBot.ViewModels
 {
@@ -33,35 +28,21 @@ namespace KhadgarBot.ViewModels
             var xmlLoginInfo = XDocument.Load(@"..\..\Resources\loginInfo.xml");
             var root = xmlLoginInfo.Descendants("root");
             var botNickname = root.Descendants("nick").First().Value;
-            var botOAuth= root.Descendants("pass").First().Value;
+            var botOAuth = root.Descendants("pass").First().Value;
 
-            BotAdminView = new BotAdminViewModel(this);
-            CommandLogView = new CommandLogViewModel(this);
+            Model = new KhadgarBotModel(botNickname, botOAuth);
+            BotAdminViewModel = new BotAdminViewModel(this);
+            CommandLogViewModel = new CommandLogViewModel(this);
             ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
-
-            //TODO combine the bot info and bot admin objects, there's no reason to separate them
-            Credentials = new ConnectionCredentials(botNickname, botOAuth);
-            Client = new TwitchClient(Credentials);
         }
 
         #endregion
 
         #region Properties
 
-        public BotAdminViewModel BotAdminView { get; set; }
-        public CommandLogViewModel CommandLogView { get; set; }
-
-        public TwitchClient Client
-        {
-            get { return (TwitchClient)GetValue(ClientProperty); }
-            set { SetValue(ClientProperty, value); }
-        }
-
-        public ConnectionCredentials Credentials
-        {
-            get { return (ConnectionCredentials)GetValue(CredentialsProperty); }
-            set { SetValue(CredentialsProperty, value); }
-        }
+        public KhadgarBotModel Model { get; set; }
+        public BotAdminViewModel BotAdminViewModel { get; set; }
+        public CommandLogViewModel CommandLogViewModel { get; set; }
 
         public TabNameEnum SelectedTabIndex
         {
@@ -70,8 +51,6 @@ namespace KhadgarBot.ViewModels
         }
 
         private static readonly DependencyProperty SelectedTabIndexProperty = DependencyProperty.Register("SelectedTabIndex", typeof(TabNameEnum), typeof(KhadgarBotViewModel), new PropertyMetadata(TabNameEnum.BotAdmin));
-        private static readonly DependencyProperty ClientProperty = DependencyProperty.Register("Client", typeof(TwitchClient), typeof(KhadgarBotViewModel));
-        private static readonly DependencyProperty CredentialsProperty = DependencyProperty.Register("Credentials", typeof(ConnectionCredentials), typeof(KhadgarBotViewModel));
 
         #endregion
 

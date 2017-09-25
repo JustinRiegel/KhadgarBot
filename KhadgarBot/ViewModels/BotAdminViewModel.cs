@@ -21,9 +21,8 @@ namespace KhadgarBot.ViewModels
         #region Members
 
         private KhadgarBotViewModel _khadgarBotViewModel;
+        private KhadgarBotModel _khadgarBotModel;
         private ConnectionCredentials _credentials;
-        //TODO: this isn't the right way to name or use this, fix it soon
-        private TwitchClient _client;
 
         #endregion
 
@@ -33,8 +32,11 @@ namespace KhadgarBot.ViewModels
         public BotAdminViewModel(KhadgarBotViewModel khadgarBotViewModel)
         {
             _khadgarBotViewModel = khadgarBotViewModel;
-            //TODO: this isn't the right way to name or use this, fix it soon
-            _client = _khadgarBotViewModel.Client;
+            _khadgarBotModel = _khadgarBotViewModel.Model;
+
+            BotName = _khadgarBotModel.BotName;
+            OAuth = _khadgarBotModel.OAuth;
+            ChannelName = _khadgarBotModel.ChannelName ?? "ciarenni";
             BotInfoLocked = false;
 
             LockBotInfo = new DelegateCommand(ExecuteLockBotInfo);
@@ -44,6 +46,18 @@ namespace KhadgarBot.ViewModels
         #endregion
 
         #region Properties
+
+        public string BotName
+        {
+            get { return (string)GetValue(BotNameProperty); }
+            private set { SetValue(BotNameProperty, value); }
+        }
+
+        public string OAuth
+        {
+            get { return (string)GetValue(OAuthProperty); }
+            private set { SetValue(OAuthProperty, value); }
+        }
 
         public string ChannelName
         {
@@ -58,6 +72,10 @@ namespace KhadgarBot.ViewModels
         }
 
         #region Dependency Properties
+
+        //TODO: temporary until i bind up the khadgarbotModel properly
+        public static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
 
         private static readonly DependencyProperty ChannelNameProperty =
             DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
@@ -93,27 +111,27 @@ namespace KhadgarBot.ViewModels
         public void ExecuteConnectToTwitch()
         {
             //TODO: this isn't the right way to name or use this, fix it soon
-            _client.OnJoinedChannel += onJoinedChannel;
-            _client.Connect();
+            _khadgarBotModel.Client.OnJoinedChannel += onJoinedChannel;
+            _khadgarBotModel.Client.Connect();
         }
 
         public void JoinChannel(string channelName)
         {
             //TODO: this isn't the right way to name or use this, fix it soon
-            _client.JoinChannel(channelName);
+            _khadgarBotModel.Client.JoinChannel(channelName);
         }
 
         public void LeaveChannel(string channelName)
         {
             //TODO: this isn't the right way to name or use this, fix it soon
-            _client.LeaveChannel(channelName);
+            _khadgarBotModel.Client.LeaveChannel(channelName);
         }
 
         private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             //TODO: this isn't the right way to name or use this, fix it soon
             Dispatcher.Invoke(new Action(() => {
-                _client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
+                _khadgarBotModel.Client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
             }));
         }
 
