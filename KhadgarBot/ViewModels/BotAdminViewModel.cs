@@ -37,11 +37,9 @@ namespace KhadgarBot.ViewModels
             BotName = _khadgarBotModel.BotName;
             OAuth = _khadgarBotModel.OAuth;
             ChannelName = _khadgarBotModel.ChannelName ?? "ciarenni";
-            BotInfoLocked = false;
 
-            LockBotInfo = new DelegateCommand(ExecuteLockBotInfo);
             ConnectToTwitch = new DelegateCommand(ExecuteConnectToTwitch);
-            JoinChannel = new DelegateCommand<string>(ExecuteJoinChannel, CanExecuteJoinChannel);
+            JoinChannel = new DelegateCommand(ExecuteJoinChannel);
         }
 
         #endregion
@@ -65,13 +63,7 @@ namespace KhadgarBot.ViewModels
             get { return (string)GetValue(ChannelNameProperty); }
             set { SetValue(ChannelNameProperty, value); }
         }
-
-        public bool BotInfoLocked
-        {
-            get { return (bool)GetValue(BotInfoLockedProperty); }
-            set { SetValue(BotInfoLockedProperty, value); }
-        }
-
+        
         #region Dependency Properties
 
         //TODO: temporary until i bind up the khadgarbotModel properly
@@ -81,59 +73,24 @@ namespace KhadgarBot.ViewModels
         private static readonly DependencyProperty ChannelNameProperty =
             DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
 
-        private static readonly DependencyProperty BotInfoLockedProperty =
-            DependencyProperty.Register("BotInfoLocked", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
-
         #endregion
 
         #endregion
 
         #region Commands
 
-        public DelegateCommand LockBotInfo { get; set; }
-
-        public void ExecuteLockBotInfo()
-        {
-            if (!BotInfoLocked)
-            {
-                BotInfoLocked = true;
-            }
-            JoinChannel.RaiseCanExecuteChanged();
-        }
-
         public DelegateCommand ConnectToTwitch { get; set; }
 
         public void ExecuteConnectToTwitch()
         {
-            //TODO: this isn't the right way to name or use this, fix it soon
-            _khadgarBotModel.Client.OnJoinedChannel += onJoinedChannel;
-            _khadgarBotModel.Client.Connect();
+            _khadgarBotViewModel.ConnectToTwitch.Invoke();
         }
 
-        public DelegateCommand<string> JoinChannel { get; set; }
+        public DelegateCommand JoinChannel { get; set; }
 
-        public bool CanExecuteJoinChannel(string channelName)
+        public void ExecuteJoinChannel()
         {
-            return BotInfoLocked;
-        }
-
-        public void ExecuteJoinChannel(string channelName)
-        {
-            //TODO: this isn't the right way to name or use this, fix it soon
-            _khadgarBotModel.Client.JoinChannel(channelName);
-        }
-
-        public void LeaveChannel(string channelName)
-        {
-            //TODO: this isn't the right way to name or use this, fix it soon
-            _khadgarBotModel.Client.LeaveChannel(channelName);
-        }
-
-        private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
-        {
-            Dispatcher.Invoke(new Action(() => {
-                _khadgarBotModel.Client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
-            }));
+            _khadgarBotViewModel.JoinChannel.Invoke(ChannelName);
         }
 
         #endregion
