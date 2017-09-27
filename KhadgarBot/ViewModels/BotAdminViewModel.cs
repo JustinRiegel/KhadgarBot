@@ -41,6 +41,7 @@ namespace KhadgarBot.ViewModels
 
             LockBotInfo = new DelegateCommand(ExecuteLockBotInfo);
             ConnectToTwitch = new DelegateCommand(ExecuteConnectToTwitch);
+            JoinChannel = new DelegateCommand<string>(ExecuteJoinChannel, CanExecuteJoinChannel);
         }
 
         #endregion
@@ -95,19 +96,13 @@ namespace KhadgarBot.ViewModels
         {
             if (!BotInfoLocked)
             {
-                //_khadgarBotViewModel.ChangeTabCallback.Execute(TabNameEnum.BotAdmin);
                 BotInfoLocked = true;
-                JoinChannel(ChannelName);
             }
-            else
-            {
-                LeaveChannel(ChannelName);
-            }
+            JoinChannel.RaiseCanExecuteChanged();
         }
 
         public DelegateCommand ConnectToTwitch { get; set; }
 
-        //TODO: implement a button for connecting to twitch for testing
         public void ExecuteConnectToTwitch()
         {
             //TODO: this isn't the right way to name or use this, fix it soon
@@ -115,7 +110,14 @@ namespace KhadgarBot.ViewModels
             _khadgarBotModel.Client.Connect();
         }
 
-        public void JoinChannel(string channelName)
+        public DelegateCommand<string> JoinChannel { get; set; }
+
+        public bool CanExecuteJoinChannel(string channelName)
+        {
+            return BotInfoLocked;
+        }
+
+        public void ExecuteJoinChannel(string channelName)
         {
             //TODO: this isn't the right way to name or use this, fix it soon
             _khadgarBotModel.Client.JoinChannel(channelName);
@@ -129,7 +131,6 @@ namespace KhadgarBot.ViewModels
 
         private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            //TODO: this isn't the right way to name or use this, fix it soon
             Dispatcher.Invoke(new Action(() => {
                 _khadgarBotModel.Client.SendMessage("Hey guys! I am a bot connected via TwitchLib!");
             }));

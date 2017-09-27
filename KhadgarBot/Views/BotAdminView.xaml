@@ -21,6 +21,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <!-- the long term plan is to let the name and oauth be entered on this view and thus be able to be used for any bot -->
             <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource LabelStyle}" Text="Bot name: "/>
@@ -32,6 +33,7 @@
 
             <Button Grid.Column="0" Grid.Row="3" Content="Confirm bot info" Command="{Binding LockBotInfo}"/>
             <Button Grid.Column="0" Grid.Row="4" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"/>
+            <Button Grid.Column="0" Grid.Row="5" Content="Confirm bot info" Command="{Binding JoinChannel}"/>
         </Grid>
     </Grid>
 </UserControl>
