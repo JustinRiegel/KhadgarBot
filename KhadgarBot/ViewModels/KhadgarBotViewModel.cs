@@ -168,7 +168,7 @@ namespace KhadgarBot.ViewModels
 
             if((chatMessage.IsModerator || chatMessage.IsBroadcaster) && chatMessage.Message[0] =='!')
             {
-                if(chatMessage.Message == "!chatpoll")
+                if(chatMessage.Message == "!chatpoll" && !_chatPollTimerIsRunning)
                 {
                     _chatPollTimer.Start();
                     _chatPollTimerIsRunning = true;
