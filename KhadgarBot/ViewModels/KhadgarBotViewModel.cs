@@ -117,7 +117,7 @@ namespace KhadgarBot.ViewModels
         {
             Dispatcher.Invoke(new Action(() => {
                 Model.Client.OnJoinedChannel -= onJoinedChannel;
-                Model.Client.SendMessage("Knowledge is power.");
+                //Model.Client.SendMessage("Knowledge is power.");
             }));
         }
 
@@ -136,7 +136,7 @@ namespace KhadgarBot.ViewModels
                 {
                     result += winningEntry.Key + ", ";
                 }
-                result = result.Substring(0, result.Length - 3);
+                result = result.Substring(0, result.Length - 2);
                 Dispatcher.Invoke(new Action(() =>
                 {
                     Model.Client.SendMessage(String.Format("There was a tie! The winners of the poll are {0} with {1} votes!", result, maxVotes));
