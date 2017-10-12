@@ -125,6 +125,13 @@ namespace KhadgarBot.ViewModels
         {
             _chatPollTimerIsRunning = false;
             _chatPollTimer.Stop();
+
+            if(_chatPollEntries.Count == 0)
+            {
+                Model.Client.SendMessage("There were no entries in the poll.");
+                return;
+            }
+
             Dictionary<int, int> groupedEntries = _chatPollEntries.GroupBy(c => c.Value).ToDictionary(t => t.Key, t => t.Select(c => c.Key).Count());
 
             var maxVotes = groupedEntries.Aggregate((l, r) => l.Value > r.Value ? l : r).Value;
@@ -166,7 +173,9 @@ namespace KhadgarBot.ViewModels
                 CheckMessageForChatPollFormatting(chatMessage.Channel, chatMessage.Username, chatMessage.Message);
             }
 
-            if((chatMessage.IsModerator || chatMessage.IsBroadcaster) && chatMessage.Message[0] =='!')
+            //specifically allow me to run commands regardless of my permissions.
+            //this is only for development and testing, it will be removed once the bot gets to a good place
+            if((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni") && chatMessage.Message[0] =='!')
             {
                 if(chatMessage.Message == "!chatpoll" && !_chatPollTimerIsRunning)
                 {
