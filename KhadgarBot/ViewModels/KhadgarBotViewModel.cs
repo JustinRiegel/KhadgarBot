@@ -7,9 +7,9 @@ using KhadgarBot.Models;
 using System.Linq;
 using System.Xml.Linq;
 using TwitchLib.Events.Client;
-using TwitchLib.Models.Client;
 using System.Collections.Generic;
 using System.Timers;
+using KhadgarBot.Interfaces;
 
 namespace KhadgarBot.ViewModels
 {
@@ -22,13 +22,10 @@ namespace KhadgarBot.ViewModels
     {
         #region Members
 
-        private const int _chatPollTimerValue = 30000;
-
-        private List<ChatMessage> _messages = new List<ChatMessage>();
-        private Dictionary<string, int> _chatPollEntries = new Dictionary<string, int>();
-        private Timer _chatPollTimer = new Timer(_chatPollTimerValue);
-        private bool _chatPollTimerIsRunning = false;
-
+        //private List<ChatMessage> _messages = new List<ChatMessage>();
+        private List<IChatCommand> _chatCommandList = new List<IChatCommand>();
+        
+        
         #endregion
 
         #region Constructor
@@ -41,17 +38,17 @@ namespace KhadgarBot.ViewModels
             var root = xmlLoginInfo.Descendants("root");
             var botNickname = root.Descendants("nick").First().Value;
             var botOAuth = root.Descendants("pass").First().Value;
+                        
+            ConnectedToTwitch = false;
+            _chatCommandList.Add(new ChatPollCommand(this));
 
             Model = new KhadgarBotModel(botNickname, botOAuth);
-            ConnectedToTwitch = false;
-
             BotAdminViewModel = new BotAdminViewModel(this);
             CommandLogViewModel = new CommandLogViewModel(this);
 
             ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
             ConnectToTwitch = new Action(ExecuteConnectToTwitch);
             JoinChannel = new Action<string>(ExecuteJoinChannel);
-            _chatPollTimer.Elapsed += onChatPollTimerElapsed;
         }
 
         #endregion
@@ -113,49 +110,21 @@ namespace KhadgarBot.ViewModels
             Model.Client.LeaveChannel(channelName);
         }
 
+        public void SendChatMessage(string message)
+        {
+            Dispatcher.Invoke(new Action(() => { Model.Client.SendMessage(message); }));
+        }
+
+        #endregion
+
+        #region Methods
+
         private void onJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             Dispatcher.Invoke(new Action(() => {
                 Model.Client.OnJoinedChannel -= onJoinedChannel;
-                //Model.Client.SendMessage("Knowledge is power.");
+                Model.Client.SendMessage("Knowledge is power.");
             }));
-        }
-
-        private void onChatPollTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            _chatPollTimerIsRunning = false;
-            _chatPollTimer.Stop();
-
-            if(_chatPollEntries.Count == 0)
-            {
-                Model.Client.SendMessage("There were no entries in the poll.");
-                return;
-            }
-
-            Dictionary<int, int> groupedEntries = _chatPollEntries.GroupBy(c => c.Value).ToDictionary(t => t.Key, t => t.Select(c => c.Key).Count());
-
-            var maxVotes = groupedEntries.Aggregate((l, r) => l.Value > r.Value ? l : r).Value;
-            var winners = groupedEntries.Where(g => g.Value == maxVotes);
-            if (winners.Count() > 1)
-            {
-                var result = "";
-                foreach (var winningEntry in winners)
-                {
-                    result += winningEntry.Key + ", ";
-                }
-                result = result.Substring(0, result.Length - 2);
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    Model.Client.SendMessage(String.Format("There was a tie! The winners of the poll are {0} with {1} votes!", result, maxVotes));
-                }));
-            }
-            else
-            {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    Model.Client.SendMessage(String.Format("The winner of the poll is {0} with {1} votes!", winners.First().Key, maxVotes));
-                }));
-            }
         }
 
         private void onMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -168,42 +137,10 @@ namespace KhadgarBot.ViewModels
 
             var chatMessage = e.ChatMessage;
 
-            if(_chatPollTimerIsRunning)
+            foreach(var chatCommand in _chatCommandList)
             {
-                CheckMessageForChatPollFormatting(chatMessage.Channel, chatMessage.Username, chatMessage.Message);
-            }
-
-            //specifically allow me to run commands regardless of my permissions.
-            //this is only for development and testing, it will be removed once the bot gets to a good place
-            if((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni") && chatMessage.Message[0] =='!')
-            {
-                if(chatMessage.Message == "!chatpoll" && !_chatPollTimerIsRunning)
-                {
-                    _chatPollTimer.Start();
-                    _chatPollTimerIsRunning = true;
-                    _chatPollEntries.Clear();
-                    Dispatcher.Invoke(new Action(() => {
-                        Model.Client.SendMessage("The streamer has asked for a poll. Entries will be accepted for the next " + (_chatPollTimerValue / 1000).ToString() + " seconds.");
-                    }));
-                }
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void CheckMessageForChatPollFormatting(string channel, string username, string message)
-        {
-            if (message.Length > 1)
-                return;
-
-            if(Int32.TryParse(message, out int vote))
-            {
-                if(!_chatPollEntries.ContainsKey(username))
-                {
-                    _chatPollEntries.Add(username, vote);
-                }
+                if (chatCommand.CanProcess(chatMessage))
+                    break;
             }
         }
 

@@ -79,8 +79,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\TabNameConverter.cs" />
     <Compile Include="Enums\TabNameEnum.cs" />
+    <Compile Include="Interfaces\IChatCommand.cs" />
+    <Compile Include="Models\Commands\ChatPollCommand.cs" />
     <Compile Include="Models\KhadgarBotModel.cs" />
     <Compile Include="ViewModels\CommandLogViewModel.cs" />
     <Compile Include="ViewModels\KhadgarBotViewModel.cs" />

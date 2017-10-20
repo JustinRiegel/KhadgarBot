@@ -37,6 +37,7 @@ namespace KhadgarBot.ViewModels
             BotName = _khadgarBotModel.BotName;
             OAuth = _khadgarBotModel.OAuth;
             ChannelName = _khadgarBotModel.ChannelName ?? "ciarenni";
+            HasConnected = false;
 
             ConnectToTwitch = new DelegateCommand(ExecuteConnectToTwitch);
             JoinChannel = new DelegateCommand(ExecuteJoinChannel);
@@ -63,15 +64,20 @@ namespace KhadgarBot.ViewModels
             get { return (string)GetValue(ChannelNameProperty); }
             set { SetValue(ChannelNameProperty, value); }
         }
-        
+
+        public bool HasConnected
+        {
+            get { return (bool)GetValue(HasConnectedProperty); }
+            set { SetValue(HasConnectedProperty, value); }
+        }
+
         #region Dependency Properties
 
         //TODO: temporary until i bind up the khadgarbotModel properly
-        public static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
-        public static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
-
-        private static readonly DependencyProperty ChannelNameProperty =
-            DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
+        private static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
+        private static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
+        private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
+        private static readonly DependencyProperty HasConnectedProperty = DependencyProperty.Register("HasConnected", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
 
         #endregion
 
@@ -84,6 +90,7 @@ namespace KhadgarBot.ViewModels
         public void ExecuteConnectToTwitch()
         {
             _khadgarBotViewModel.ConnectToTwitch.Invoke();
+            HasConnected = true;
         }
 
         public DelegateCommand JoinChannel { get; set; }

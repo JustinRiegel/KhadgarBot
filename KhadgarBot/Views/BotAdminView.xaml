@@ -5,9 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:KhadgarBot.ViewModels"
              xmlns:models="clr-namespace:KhadgarBot.Models"
+             xmlns:converters="clr-namespace:KhadgarBot.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:BotAdminViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:InverseBooleanConverter x:Key="ibc" />
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid><!--IsEnabled="{Binding BotInfoLocked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">-->
             <Grid.ColumnDefinitions>
@@ -30,7 +36,8 @@
             <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelStyle}" Text="Channel name: " />
             <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
 
-            <Button Grid.Column="0" Grid.Row="3" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"/>
+            <Button Grid.Column="0" Grid.Row="3" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"
+                    IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Button Grid.Column="0" Grid.Row="4" Content="Join channel" Command="{Binding JoinChannel}"/>
         </Grid>
     </Grid>
