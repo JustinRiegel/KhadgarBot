@@ -49,6 +49,7 @@ namespace KhadgarBot.ViewModels
             ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
             ConnectToTwitch = new Action(ExecuteConnectToTwitch);
             JoinChannel = new Action<string>(ExecuteJoinChannel);
+            LeaveChannel = new Action<string>(ExecuteLeaveChannel);
         }
 
         #endregion
@@ -105,9 +106,12 @@ namespace KhadgarBot.ViewModels
             Model.Client.OnMessageReceived += onMessageReceived;
         }
 
+        public Action<string> LeaveChannel { get; set; }
+
         public void ExecuteLeaveChannel(string channelName)
         {
             Model.Client.LeaveChannel(channelName);
+            Model.Client.OnMessageReceived -= onMessageReceived;
         }
 
         public void SendChatMessage(string message)

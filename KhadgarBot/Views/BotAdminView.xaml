@@ -15,13 +15,14 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Grid><!--IsEnabled="{Binding BotInfoLocked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">-->
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -34,11 +35,16 @@
             <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource LabelStyle}" Text="OAuth: "/>
             <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding OAuth, Mode=OneWay}" IsEnabled="False" Width="100"/>
             <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelStyle}" Text="Channel name: " />
-            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+            <!-- at some point, this will allow you to enter a channel name to a list of channels, allowing the bot to join and leave channels without multiple instances -->
+            <TextBox Grid.Column="1" Grid.Row="2" Width="100" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                     IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Button Grid.Column="0" Grid.Row="3" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"
-                    IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Button Grid.Column="0" Grid.Row="4" Content="Join channel" Command="{Binding JoinChannel}"/>
+                    IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="0" Grid.Row="4" Content="Join channel" Command="{Binding JoinChannel}"
+                    IsEnabled="{Binding HasConnectedButNotJoined, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="0" Grid.Row="5" Content="Leave channel" Command="{Binding LeaveChannel}"
+                    IsEnabled="{Binding HasJoined, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
     </Grid>
 </UserControl>

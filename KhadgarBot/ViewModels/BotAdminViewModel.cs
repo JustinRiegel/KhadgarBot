@@ -11,12 +11,14 @@ using Prism.Commands;
 using TwitchLib.Events.Client;
 using TwitchLib.Models.Client;
 using TwitchLib;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace KhadgarBot.ViewModels
 {
     [Export]
     [PartCreationPolicy(CreationPolicy.NonShared)]
-    public class BotAdminViewModel : DependencyObject
+    public class BotAdminViewModel : DependencyObject, INotifyPropertyChanged
     {
         #region Members
 
@@ -38,9 +40,12 @@ namespace KhadgarBot.ViewModels
             OAuth = _khadgarBotModel.OAuth;
             ChannelName = _khadgarBotModel.ChannelName ?? "ciarenni";
             HasConnected = false;
+            HasConnectedButNotJoined = false;
+            HasJoined = false;
 
             ConnectToTwitch = new DelegateCommand(ExecuteConnectToTwitch);
             JoinChannel = new DelegateCommand(ExecuteJoinChannel);
+            LeaveChannel = new DelegateCommand(ExecuteLeaveChannel);
         }
 
         #endregion
@@ -67,17 +72,41 @@ namespace KhadgarBot.ViewModels
 
         public bool HasConnected
         {
-            get { return (bool)GetValue(HasConnectedProperty); }
-            set { SetValue(HasConnectedProperty, value); }
+            get => (bool)GetValue(HasConnectedProperty);
+            set {
+                SetValue(HasConnectedProperty, value);
+                NotifyPropertyChanged(nameof(HasConnected));
+            }
+        }
+
+        public bool HasConnectedButNotJoined
+        {
+            get => (bool)GetValue(HasConnectedButNotJoinedProperty);
+            set
+            {
+                SetValue(HasConnectedButNotJoinedProperty, value);
+                NotifyPropertyChanged(nameof(HasConnectedButNotJoined));
+            }
+        }
+
+        public bool HasJoined
+        {
+            get => (bool)GetValue(HasJoinedProperty);
+            set
+            {
+                SetValue(HasJoinedProperty, value);
+                NotifyPropertyChanged(nameof(HasJoined));
+            }
         }
 
         #region Dependency Properties
 
-        //TODO: temporary until i bind up the khadgarbotModel properly
         private static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
         private static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
         private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
         private static readonly DependencyProperty HasConnectedProperty = DependencyProperty.Register("HasConnected", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
+        private static readonly DependencyProperty HasConnectedButNotJoinedProperty = DependencyProperty.Register("HasConnectedButNotJoined", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
+        private static readonly DependencyProperty HasJoinedProperty = DependencyProperty.Register("HasJoined", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
 
         #endregion
 
@@ -89,22 +118,48 @@ namespace KhadgarBot.ViewModels
 
         public void ExecuteConnectToTwitch()
         {
+            //assuming the connect succeeds is bad, look into if the TwitchLib provides info on connection success
             _khadgarBotViewModel.ConnectToTwitch.Invoke();
             HasConnected = true;
+            HasConnectedButNotJoined = true;
         }
 
         public DelegateCommand JoinChannel { get; set; }
 
         public void ExecuteJoinChannel()
         {
+            //assuming the join succeeds is bad, look into if the TwitchLib provides info on join success
             _khadgarBotViewModel.JoinChannel.Invoke(ChannelName);
+            HasConnectedButNotJoined = false;
+            HasJoined = true;
+        }
+
+        public DelegateCommand LeaveChannel { get; set; }
+
+        public void ExecuteLeaveChannel()
+        {
+            //assuming the join succeeds is bad, look into if the TwitchLib provides info on join success
+            _khadgarBotViewModel.LeaveChannel.Invoke(ChannelName);
+            HasConnectedButNotJoined = true;
+            HasJoined = false;
         }
 
         #endregion
 
         #region Methods
+        
 
 
+        #endregion
+
+        #region Implementation of INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         #endregion
     }
