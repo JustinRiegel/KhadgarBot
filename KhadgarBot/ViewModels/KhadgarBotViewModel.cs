@@ -158,6 +158,7 @@ namespace KhadgarBot.ViewModels
         {
             string jsonStringData;
 
+            //TODO: change this path to point to wherever in the solution i store the json files
             foreach (var file in Directory.EnumerateFiles(@"D:\GitHub Repos\heroes-talents\hero"))
             {
                 using (var fs = new FileStream(file, FileMode.Open))
@@ -174,10 +175,14 @@ namespace KhadgarBot.ViewModels
                 var abilityList = new List<Ability>();
                 var talentList = new List<Talent>();
 
+                //for the heroes with multiple "profiles", such as abathur and abathur's hat, we need to loop over
+                //all of them so we get the entire moveset
                 foreach (var abilityProfile in jsonObj["abilities"])
                 {
+                    //this will only have one entry in it per profile. i think...
                     foreach (var profile in abilityProfile)
                     {
+                        //loop over each profile and add it to the ability list
                         foreach (var ability in profile)
                         {
                             abilityList.Add(JsonConvert.DeserializeObject<Ability>(Convert.ToString(ability)));
@@ -185,13 +190,20 @@ namespace KhadgarBot.ViewModels
                     }
                 }
 
+                //im using tiers (1,2,3,...) instead of level (1,4,7,...) because its more consistent when considering
+                //heroes like chromie who get talents at different levels
                 var talentTierNumber = 1;
+
+                //talents are organized by tier, so loop over each tier to get the talents from each
                 foreach (var talentTier in jsonObj["talents"])
                 {
+                    //this will only have one entry in it per tier. i think...
                     foreach (var talents in talentTier)
                     {
+                        //loop over each talent in the tier and add it to the talent list
                         foreach (var talent in talents)
                         {
+                            //add the talent tier to the json data
                             talent["talentTier"] = $"{talentTierNumber}";
                             talentList.Add(JsonConvert.DeserializeObject<Talent>(Convert.ToString(talent)));
                         }
