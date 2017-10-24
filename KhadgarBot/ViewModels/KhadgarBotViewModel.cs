@@ -8,8 +8,10 @@ using System.Linq;
 using System.Xml.Linq;
 using TwitchLib.Events.Client;
 using System.Collections.Generic;
-using System.Timers;
+using System.Data.SQLite;
 using KhadgarBot.Interfaces;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace KhadgarBot.ViewModels
 {
@@ -22,9 +24,11 @@ namespace KhadgarBot.ViewModels
     {
         #region Members
 
-        //private List<ChatMessage> _messages = new List<ChatMessage>();
-        private List<IChatCommand> _chatCommandList = new List<IChatCommand>();
-        
+        private const string KHADGARBOT_SQLITE_DBNAME = "KhadgarBot.sqlite";
+
+        private List<HeroData> _heroDataList = new List<HeroData>();
+        private SQLiteConnection _sqLiteConnection = new SQLiteConnection($"Data Source={KHADGARBOT_SQLITE_DBNAME};Version=3;");
+        private List<IChatCommand> _chatCommandList = new List<IChatCommand>();        
         
         #endregion
 
@@ -41,6 +45,8 @@ namespace KhadgarBot.ViewModels
                         
             ConnectedToTwitch = false;
             _chatCommandList.Add(new ChatPollCommand(this));
+
+            CheckForHeroesTalentDatabase();
 
             Model = new KhadgarBotModel(botNickname, botOAuth);
             BotAdminViewModel = new BotAdminViewModel(this);
@@ -146,6 +152,121 @@ namespace KhadgarBot.ViewModels
                 if (chatCommand.CanProcess(chatMessage))
                     break;
             }
+        }
+
+        private void SetUpHeroDataList()
+        {
+            string jsonStringData;
+
+            foreach (var file in Directory.EnumerateFiles(@"D:\GitHub Repos\heroes-talents\hero"))
+            {
+                using (var fs = new FileStream(file, FileMode.Open))
+                {
+                    using (var sr = new StreamReader(fs))
+                    {
+                        jsonStringData = sr.ReadToEnd();
+                    }
+                }
+
+                dynamic jsonObj = JsonConvert.DeserializeObject(jsonStringData);
+
+                var hero = JsonConvert.DeserializeObject<Hero>(Convert.ToString(jsonObj));
+                var abilityList = new List<Ability>();
+                var talentList = new List<Talent>();
+
+                foreach (var abilityProfile in jsonObj["abilities"])
+                {
+                    foreach (var profile in abilityProfile)
+                    {
+                        foreach (var ability in profile)
+                        {
+                            abilityList.Add(JsonConvert.DeserializeObject<Ability>(Convert.ToString(ability)));
+                        }
+                    }
+                }
+
+                var talentTierNumber = 1;
+                foreach (var talentTier in jsonObj["talents"])
+                {
+                    foreach (var talents in talentTier)
+                    {
+                        foreach (var talent in talents)
+                        {
+                            talent["talentTier"] = $"{talentTierNumber}";
+                            talentList.Add(JsonConvert.DeserializeObject<Talent>(Convert.ToString(talent)));
+                        }
+                    }
+                    ++talentTierNumber;
+                }
+
+                _heroDataList.Add(new HeroData(hero, abilityList, talentList));
+            }
+        }
+
+        private void CheckForHeroesTalentDatabase()
+        {
+            if(!File.Exists(KHADGARBOT_SQLITE_DBNAME))
+            {
+                SQLiteConnection.CreateFile(KHADGARBOT_SQLITE_DBNAME);
+            }
+
+            _sqLiteConnection.Open();
+
+            var sqLiteCheckHeroTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Hero';";
+            var sqLiteCheckAbilityTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Ability';";
+            var sqLiteCheckTalentTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Talent';";
+
+            if (!(new SQLiteCommand(sqLiteCheckHeroTableExists, _sqLiteConnection)).ExecuteReader().Read())
+            {
+                var sqLiteCreateHeroTableCommandText = @"CREATE TABLE Hero (
+                Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
+                HeroId INTEGER NOT NULL,
+                ShortName VARCHAR(50)     NOT NULL,
+                AttributeId VARCHAR(50)     NOT NULL,
+                Name        VARCHAR(50)     NOT NULL,
+                Role        VARCHAR(50)     NOT NULL,
+                Type        VARCHAR(50)     NOT NULL,
+                ReleaseDate DATE NOT NULL
+                );";
+                var sqLiteCreateHeroTableCommand = new SQLiteCommand(sqLiteCreateHeroTableCommandText, _sqLiteConnection);
+                sqLiteCreateHeroTableCommand.ExecuteNonQuery();
+            }
+
+            if (!(new SQLiteCommand(sqLiteCheckAbilityTableExists, _sqLiteConnection)).ExecuteReader().Read())
+            {
+                var sqLiteCreateAbilityTableCommandText = @"CREATE TABLE Ability (
+                    Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
+                    HeroId UNIQUEIDENTIFIER REFERENCES Hero (Id) NOT NULL,
+                    Name VARCHAR (50) NOT NULL,
+                    Description VARCHAR (2000) NOT NULL,
+                    Hotkey CHAR (1),
+                    AbilityId VARCHAR (50) NOT NULL,
+                    Cooldown INTEGER,
+                    ManaCost VARCHAR (10),
+                    Trait BIT
+                    );";
+                var sqLiteCreateAbilityTableCommand = new SQLiteCommand(sqLiteCreateAbilityTableCommandText, _sqLiteConnection);
+                sqLiteCreateAbilityTableCommand.ExecuteNonQuery();
+            }
+
+            if (!(new SQLiteCommand(sqLiteCheckTalentTableExists, _sqLiteConnection)).ExecuteReader().Read())
+            {
+                var sqLiteCreateTalentTableCommandText = @"CREATE TABLE Talent (
+                    Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
+                    HeroId UNIQUEIDENTIFIER REFERENCES Hero (Id) NOT NULL,
+                    TalentTier INTEGER NOT NULL,
+                    TooltipId VARCHAR (100) NOT NULL,
+                    TalentTreeId VARCHAR (100) NOT NULL,
+                    Name VARCHAR (50) NOT NULL,
+                    Description VARCHAR (500) NOT NULL,
+                    Sort INTEGER NOT NULL,
+                    AbilityId VARCHAR (50) NOT NULL
+                    );";
+                var sqLiteCreateTalentTableCommand = new SQLiteCommand(sqLiteCreateTalentTableCommandText, _sqLiteConnection);
+                sqLiteCreateTalentTableCommand.ExecuteNonQuery();
+            }
+            
+            _sqLiteConnection.Close();
         }
 
         #endregion
