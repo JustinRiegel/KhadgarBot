@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhadgarConsole", "KhadgarConsole\KhadgarConsole.csproj", "{6C347D6A-FE34-4A5B-AADA-746BDF2C2D49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhadgarBot", "KhadgarBot\KhadgarBot.csproj", "{3324F3F7-50F3-4333-A8BF-78B7582E97D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeroesTalentsDeserializer", "HeroesTalentsDeserializer\HeroesTalentsDeserializer.csproj", "{3CD51899-8427-4B69-BFCF-2AB56956E021}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CD51899-8427-4B69-BFCF-2AB56956E021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CD51899-8427-4B69-BFCF-2AB56956E021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CD51899-8427-4B69-BFCF-2AB56956E021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CD51899-8427-4B69-BFCF-2AB56956E021}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
