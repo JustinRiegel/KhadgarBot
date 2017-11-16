@@ -37,7 +37,7 @@
             <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource LabelStyle}" Text="Channel name: " />
             <!-- at some point, this will allow you to enter a channel name to a list of channels, allowing the bot to join and leave channels without multiple instances -->
             <TextBox Grid.Column="1" Grid.Row="2" Width="100" Text="{Binding ChannelName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                     IsEnabled="{Binding HasJoined, Converter={StaticResource ibc}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Button Grid.Column="0" Grid.Row="3" Content="Connect to Twitch" Command="{Binding ConnectToTwitch}"
                     IsEnabled="{Binding HasConnected, Converter={StaticResource ibc}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>

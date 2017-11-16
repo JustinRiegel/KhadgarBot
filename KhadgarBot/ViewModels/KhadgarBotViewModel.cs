@@ -12,6 +12,7 @@ using System.Data.SQLite;
 using KhadgarBot.Interfaces;
 using System.IO;
 using Newtonsoft.Json;
+using KhadgarBot.Models.Commands;
 
 namespace KhadgarBot.ViewModels
 {
@@ -46,7 +47,8 @@ namespace KhadgarBot.ViewModels
             ConnectedToTwitch = false;
             _chatCommandList.Add(new ChatPollCommand(this));
 
-            CheckForHeroesTalentDatabase();
+            SetUpHeroDataList();
+            //CheckForHeroesTalentDatabase();
 
             Model = new KhadgarBotModel(botNickname, botOAuth);
             BotAdminViewModel = new BotAdminViewModel(this);
@@ -133,7 +135,7 @@ namespace KhadgarBot.ViewModels
         {
             Dispatcher.Invoke(new Action(() => {
                 Model.Client.OnJoinedChannel -= onJoinedChannel;
-                Model.Client.SendMessage("Knowledge is power.");
+                //Model.Client.SendMessage("Knowledge is power.");
             }));
         }
 
@@ -276,6 +278,40 @@ namespace KhadgarBot.ViewModels
                     );";
                 var sqLiteCreateTalentTableCommand = new SQLiteCommand(sqLiteCreateTalentTableCommandText, _sqLiteConnection);
                 sqLiteCreateTalentTableCommand.ExecuteNonQuery();
+            }
+
+            Guid heroGuid;
+            SQLiteCommand sqLiteHeroDataCommand;
+            var sqLiteHeroInsertCommandText = @"INSERT INTO Hero VALUES ('{0}',{1},'{2}','{3}','{4}','{5}','{6}','{7}')";
+            var sqLiteAbilityInsertCommandText = @"INSERT INTO Ability VALUES ('{0}','{1}','{2}','{3}','{4}','{5}',{6},'{7}',{8})";
+            var sqLiteTalentInsertCommandText = @"INSERT INTO Talent VALUES ('{0}','{1}',{2},'{3}','{4}','{5}',{6},{7},{8})";
+            //var temp = String.Format(sqLiteAbilityInsertCommandText,
+            //            Guid.NewGuid(), Guid.NewGuid(), _heroDataList[0].Abilities[0].Name, _heroDataList[0].Abilities[0].Description, _heroDataList[0].Abilities[0].Hotkey, _heroDataList[0].Abilities[0].AbilityId,
+            //            _heroDataList[0].Abilities[0].Cooldown, _heroDataList[0].Abilities[0].ManaCost, Convert.ToInt32(Convert.ToBoolean(_heroDataList[0].Abilities[0].Trait)));
+            foreach (var hero in _heroDataList)
+            {
+                heroGuid = Guid.NewGuid();
+                sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteHeroInsertCommandText,
+                Guid.NewGuid(), hero.Hero.HeroId, hero.Hero.ShortName,
+                hero.Hero.AttributeId, hero.Hero.Name, hero.Hero.Role,
+                hero.Hero.Type, DateTime.Now), _sqLiteConnection);
+                sqLiteHeroDataCommand.ExecuteNonQuery();
+
+                foreach(var ability in hero.Abilities)
+                {
+                    sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteAbilityInsertCommandText,
+                        Guid.NewGuid(), heroGuid, ability.Name, ability.Description, ability.Hotkey, ability.AbilityId,
+                        ability.Cooldown, ability.ManaCost, Convert.ToInt32(Convert.ToBoolean(ability.Trait))), _sqLiteConnection);
+                    sqLiteHeroDataCommand.ExecuteNonQuery();
+                }
+
+                foreach(var talent in hero.Talents)
+                {
+                    sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteAbilityInsertCommandText,
+                        Guid.NewGuid(), heroGuid, talent.TalentTier, talent.TooltipId, talent.TalentTreeId,
+                        talent.Name, talent.Description, talent.Sort, talent.AbilityId), _sqLiteConnection);
+                    sqLiteHeroDataCommand.ExecuteNonQuery();
+                }
             }
             
             _sqLiteConnection.Close();
