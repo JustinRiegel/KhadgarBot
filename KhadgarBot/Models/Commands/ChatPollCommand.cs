@@ -40,7 +40,7 @@ namespace KhadgarBot.Models
             //have a killswitch for a poll in case it needs to be cut short
             if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
             {
-                if (chatMessage.Message.Substring(0, 11).ToLower() == "!cancelpoll" && _chatPollTimerIsRunning)
+                if (chatMessage.Message.Length >= 11 && chatMessage.Message.Substring(0, 11).ToLower() == "!cancelpoll" && _chatPollTimerIsRunning)
                 {
                     _chatPollTimerIsRunning = false;
                     _chatPollTimer.Stop();
@@ -62,7 +62,7 @@ namespace KhadgarBot.Models
             //this is only for development and testing, it will be removed once the bot gets to a good place
             if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.IsSubscriber || chatMessage.Username == "ciarenni"))
             {
-                if (chatMessage.Message.Substring(0, 9).ToLower() == "!chatpoll" && !_chatPollTimerIsRunning)
+                if (chatMessage.Message.Length >= 9 && chatMessage.Message.Substring(0, 9).ToLower() == "!chatpoll" && !_chatPollTimerIsRunning)
                 {
                     _chatPollTimerValue = 30;
 
