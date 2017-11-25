@@ -12,7 +12,6 @@ using System.Data.SQLite;
 using KhadgarBot.Interfaces;
 using System.IO;
 using Newtonsoft.Json;
-using KhadgarBot.Models.Commands;
 
 namespace KhadgarBot.ViewModels
 {
@@ -48,7 +47,7 @@ namespace KhadgarBot.ViewModels
             _chatCommandList.Add(new ChatPollCommand(this));
 
             SetUpHeroDataList();
-            //CheckForHeroesTalentDatabase();
+            CheckForHeroesTalentDatabase();
 
             Model = new KhadgarBotModel(botNickname, botOAuth);
             BotAdminViewModel = new BotAdminViewModel(this);
@@ -219,102 +218,133 @@ namespace KhadgarBot.ViewModels
 
         private void CheckForHeroesTalentDatabase()
         {
+            //this needs to be changed to use SqlParameters, which provides escaping and injection protection
             if(!File.Exists(KHADGARBOT_SQLITE_DBNAME))
             {
                 SQLiteConnection.CreateFile(KHADGARBOT_SQLITE_DBNAME);
             }
 
-            _sqLiteConnection.Open();
-
-            var sqLiteCheckHeroTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Hero';";
-            var sqLiteCheckAbilityTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Ability';";
-            var sqLiteCheckTalentTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Talent';";
-
-            if (!(new SQLiteCommand(sqLiteCheckHeroTableExists, _sqLiteConnection)).ExecuteReader().Read())
+            using (SQLiteConnection sqLiteConnection = new SQLiteConnection($"Data Source={KHADGARBOT_SQLITE_DBNAME};Version=3;"))
             {
-                var sqLiteCreateHeroTableCommandText = @"CREATE TABLE Hero (
-                Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
-                HeroId INTEGER NOT NULL,
-                ShortName VARCHAR(50)     NOT NULL,
-                AttributeId VARCHAR(50)     NOT NULL,
-                Name        VARCHAR(50)     NOT NULL,
-                Role        VARCHAR(50)     NOT NULL,
-                Type        VARCHAR(50)     NOT NULL,
-                ReleaseDate DATE NOT NULL
-                );";
-                var sqLiteCreateHeroTableCommand = new SQLiteCommand(sqLiteCreateHeroTableCommandText, _sqLiteConnection);
-                sqLiteCreateHeroTableCommand.ExecuteNonQuery();
-            }
+                sqLiteConnection.Open();
 
-            if (!(new SQLiteCommand(sqLiteCheckAbilityTableExists, _sqLiteConnection)).ExecuteReader().Read())
-            {
-                var sqLiteCreateAbilityTableCommandText = @"CREATE TABLE Ability (
-                    Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
-                    HeroId UNIQUEIDENTIFIER REFERENCES Hero (Id) NOT NULL,
-                    Name VARCHAR (50) NOT NULL,
-                    Description VARCHAR (2000) NOT NULL,
-                    Hotkey CHAR (1),
-                    AbilityId VARCHAR (50) NOT NULL,
-                    Cooldown INTEGER,
-                    ManaCost VARCHAR (10),
-                    Trait BIT
-                    );";
-                var sqLiteCreateAbilityTableCommand = new SQLiteCommand(sqLiteCreateAbilityTableCommandText, _sqLiteConnection);
-                sqLiteCreateAbilityTableCommand.ExecuteNonQuery();
-            }
+                var sqLiteCheckHeroTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Hero';";
+                var sqLiteCheckAbilityTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Ability';";
+                var sqLiteCheckTalentTableExists = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Talent';";
 
-            if (!(new SQLiteCommand(sqLiteCheckTalentTableExists, _sqLiteConnection)).ExecuteReader().Read())
-            {
-                var sqLiteCreateTalentTableCommandText = @"CREATE TABLE Talent (
-                    Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
-                    HeroId UNIQUEIDENTIFIER REFERENCES Hero (Id) NOT NULL,
-                    TalentTier INTEGER NOT NULL,
-                    TooltipId VARCHAR (100) NOT NULL,
-                    TalentTreeId VARCHAR (100) NOT NULL,
-                    Name VARCHAR (50) NOT NULL,
-                    Description VARCHAR (500) NOT NULL,
-                    Sort INTEGER NOT NULL,
-                    AbilityId VARCHAR (50) NOT NULL
-                    );";
-                var sqLiteCreateTalentTableCommand = new SQLiteCommand(sqLiteCreateTalentTableCommandText, _sqLiteConnection);
-                sqLiteCreateTalentTableCommand.ExecuteNonQuery();
-            }
-
-            Guid heroGuid;
-            SQLiteCommand sqLiteHeroDataCommand;
-            var sqLiteHeroInsertCommandText = @"INSERT INTO Hero VALUES ('{0}',{1},'{2}','{3}','{4}','{5}','{6}','{7}')";
-            var sqLiteAbilityInsertCommandText = @"INSERT INTO Ability VALUES ('{0}','{1}','{2}','{3}','{4}','{5}',{6},'{7}',{8})";
-            var sqLiteTalentInsertCommandText = @"INSERT INTO Talent VALUES ('{0}','{1}',{2},'{3}','{4}','{5}',{6},{7},{8})";
-            //var temp = String.Format(sqLiteAbilityInsertCommandText,
-            //            Guid.NewGuid(), Guid.NewGuid(), _heroDataList[0].Abilities[0].Name, _heroDataList[0].Abilities[0].Description, _heroDataList[0].Abilities[0].Hotkey, _heroDataList[0].Abilities[0].AbilityId,
-            //            _heroDataList[0].Abilities[0].Cooldown, _heroDataList[0].Abilities[0].ManaCost, Convert.ToInt32(Convert.ToBoolean(_heroDataList[0].Abilities[0].Trait)));
-            foreach (var hero in _heroDataList)
-            {
-                heroGuid = Guid.NewGuid();
-                sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteHeroInsertCommandText,
-                Guid.NewGuid(), hero.Hero.HeroId, hero.Hero.ShortName,
-                hero.Hero.AttributeId, hero.Hero.Name, hero.Hero.Role,
-                hero.Hero.Type, DateTime.Now), _sqLiteConnection);
-                sqLiteHeroDataCommand.ExecuteNonQuery();
-
-                foreach(var ability in hero.Abilities)
+                //TODO there's probably a better way to do these checks for if the tables exist, i.e. using a using statement
+                if (!(new SQLiteCommand(sqLiteCheckHeroTableExists, sqLiteConnection)).ExecuteReader().Read())
                 {
-                    sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteAbilityInsertCommandText,
-                        Guid.NewGuid(), heroGuid, ability.Name, ability.Description, ability.Hotkey, ability.AbilityId,
-                        ability.Cooldown, ability.ManaCost, Convert.ToInt32(Convert.ToBoolean(ability.Trait))), _sqLiteConnection);
-                    sqLiteHeroDataCommand.ExecuteNonQuery();
+                    var sqLiteCreateHeroTableCommandText = @"CREATE TABLE Hero (
+                        Id          UNIQUEIDENTIFIER    NOT NULL PRIMARY KEY,
+                        HeroId      INTEGER             NOT NULL,
+                        ShortName   VARCHAR(50)         NOT NULL,
+                        AttributeId VARCHAR(50)         NOT NULL,
+                        Name        VARCHAR(50)         NOT NULL,
+                        Role        VARCHAR(50)         NOT NULL,
+                        Type        VARCHAR(50)         NOT NULL,
+                        ReleaseDate DATE                NOT NULL
+                        );";
+                    var sqLiteCreateHeroTableCommand = new SQLiteCommand(sqLiteCreateHeroTableCommandText, sqLiteConnection);
+                    sqLiteCreateHeroTableCommand.ExecuteNonQuery();
                 }
 
-                foreach(var talent in hero.Talents)
+                if (!(new SQLiteCommand(sqLiteCheckAbilityTableExists, sqLiteConnection)).ExecuteReader().Read())
                 {
-                    sqLiteHeroDataCommand = new SQLiteCommand(String.Format(sqLiteAbilityInsertCommandText,
-                        Guid.NewGuid(), heroGuid, talent.TalentTier, talent.TooltipId, talent.TalentTreeId,
-                        talent.Name, talent.Description, talent.Sort, talent.AbilityId), _sqLiteConnection);
-                    sqLiteHeroDataCommand.ExecuteNonQuery();
+                    var sqLiteCreateAbilityTableCommandText = @"CREATE TABLE Ability (
+                        Id          UNIQUEIDENTIFIER    NOT NULL PRIMARY KEY,
+                        HeroId      UNIQUEIDENTIFIER    NOT NULL REFERENCES Hero (Id),
+                        Name        VARCHAR (50)        NOT NULL,
+                        Description VARCHAR (2000)      NOT NULL,
+                        Hotkey      CHAR (1),
+                        AbilityId   VARCHAR (50)        NOT NULL,
+                        Cooldown    INTEGER,
+                        ManaCost    VARCHAR (10),
+                        IsTrait       BIT
+                        );";
+                    var sqLiteCreateAbilityTableCommand = new SQLiteCommand(sqLiteCreateAbilityTableCommandText, sqLiteConnection);
+                    sqLiteCreateAbilityTableCommand.ExecuteNonQuery();
                 }
+
+                if (!(new SQLiteCommand(sqLiteCheckTalentTableExists, sqLiteConnection)).ExecuteReader().Read())
+                {
+                    var sqLiteCreateTalentTableCommandText = @"CREATE TABLE Talent (
+                        Id              UNIQUEIDENTIFIER    NOT NULL PRIMARY KEY,
+                        HeroId          UNIQUEIDENTIFIER    NOT NULL REFERENCES Hero (Id),
+                        TalentTier      INTEGER             NOT NULL,
+                        TooltipId       VARCHAR (100)       NOT NULL,
+                        TalentTreeId    VARCHAR (100)       NOT NULL,
+                        Name            VARCHAR (50)        NOT NULL,
+                        Description     VARCHAR (500)       NOT NULL,
+                        Sort            INTEGER             NOT NULL,
+                        AbilityId       VARCHAR (50)        NOT NULL
+                        );";
+                    var sqLiteCreateTalentTableCommand = new SQLiteCommand(sqLiteCreateTalentTableCommandText, sqLiteConnection);
+                    sqLiteCreateTalentTableCommand.ExecuteNonQuery();
+                }
+
+                //using (SQLiteCommand delCmd = new SQLiteCommand(sqLiteConnection))
+                //{
+                //    delCmd.CommandText = "delete from Hero; delete from Ability; delete from Talent;";
+                //    delCmd.ExecuteNonQuery();
+                //}
+
+                string heroGuid;
+                SQLiteCommand sqLiteHeroDataCommand;
+                var sqLiteHeroInsertCommandText = @"INSERT INTO Hero VALUES ($Id, $HeroId, $ShortName, $AttributeId, $Name, $Role, $Type, $ReleaseDate)";
+                var sqLiteAbilityInsertCommandText = @"INSERT INTO Ability VALUES ($Id, $HeroId, $Name, $Description, $Hotkey, $AbilityId, $Cooldown, $ManaCost, $IsTrait)";
+                var sqLiteTalentInsertCommandText = @"INSERT INTO Talent VALUES ($Id, $HeroId, $TalentTier, $TooltipId, $TalentTreeId, $Name, $Description, $Sort, $AbilityId)";
+                //var temp = String.Format(sqLiteAbilityInsertCommandText,
+                //            Guid.NewGuid(), Guid.NewGuid(), _heroDataList[0].Abilities[0].Name, _heroDataList[0].Abilities[0].Description, _heroDataList[0].Abilities[0].Hotkey, _heroDataList[0].Abilities[0].AbilityId,
+                //            _heroDataList[0].Abilities[0].Cooldown, _heroDataList[0].Abilities[0].ManaCost, Convert.ToInt32(Convert.ToBoolean(_heroDataList[0].Abilities[0].Trait)));
+                foreach (var hero in _heroDataList)
+                {
+                    heroGuid = Guid.NewGuid().ToString();
+                    sqLiteHeroDataCommand = new SQLiteCommand(sqLiteHeroInsertCommandText, sqLiteConnection);
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Id", heroGuid));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$HeroId", hero.Hero.HeroId));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$ShortName", hero.Hero.ShortName));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$AttributeId", hero.Hero.AttributeId));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Name", hero.Hero.Name));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Role", hero.Hero.Role));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Type", hero.Hero.Type));
+                    //TODO fix this, it should have the actual release date in it
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$ReleaseDate", DateTime.Now.Date));
+                    sqLiteHeroDataCommand.ExecuteNonQuery();
+
+                    foreach (var ability in hero.Abilities)
+                    {
+                        sqLiteHeroDataCommand = new SQLiteCommand(sqLiteAbilityInsertCommandText, sqLiteConnection);
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Id", Guid.NewGuid().ToString()));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$HeroId", heroGuid));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Name", ability.Name));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Description", ability.Description));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Hotkey", ability.Hotkey));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$AbilityId", ability.AbilityId));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Cooldown", ability.Cooldown));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$ManaCost", ability.ManaCost));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$IsTrait", Convert.ToInt32(Convert.ToBoolean(ability.Trait))));
+                        sqLiteHeroDataCommand.ExecuteNonQuery();
+                    }
+
+                    foreach (var talent in hero.Talents)
+                    {
+                        sqLiteHeroDataCommand = new SQLiteCommand(sqLiteTalentInsertCommandText, sqLiteConnection);
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Id", Guid.NewGuid().ToString()));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$HeroId", heroGuid));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$TalentTier", talent.TalentTier));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$TooltipId", talent.TooltipId));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$TalentTreeId", talent.TalentTreeId));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Name", talent.Name));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Description", talent.Description));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Sort", talent.Sort));
+                        sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$AbilityId", talent.AbilityId));
+                        sqLiteHeroDataCommand.ExecuteNonQuery();
+                    }
+                }
+
             }
-            
-            _sqLiteConnection.Close();
+            //_sqLiteConnection.Close();
         }
 
         #endregion

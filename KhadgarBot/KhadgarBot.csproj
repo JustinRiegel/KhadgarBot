@@ -84,9 +84,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="TwitchLib, Version=1.5.4.37362, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TwitchLib\TwitchLib\bin\Debug\TwitchLib.dll</HintPath>
+    <Reference Include="TwitchLib">
+      <HintPath>Resources\TwitchLib.dll</HintPath>
     </Reference>
     <Reference Include="websocket-sharp">
       <HintPath>Resources\websocket-sharp.dll</HintPath>
