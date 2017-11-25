@@ -275,7 +275,7 @@ namespace KhadgarBot.ViewModels
                         TooltipId       VARCHAR (100)       NOT NULL,
                         TalentTreeId    VARCHAR (100)       NOT NULL,
                         Name            VARCHAR (50)        NOT NULL,
-                        Description     VARCHAR (500)       NOT NULL,
+                        Description     VARCHAR (2000)       NOT NULL,
                         Sort            INTEGER             NOT NULL,
                         AbilityId       VARCHAR (50)        NOT NULL
                         );";
@@ -309,7 +309,7 @@ namespace KhadgarBot.ViewModels
                     sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Role", hero.Hero.Role));
                     sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$Type", hero.Hero.Type));
                     //TODO fix this, it should have the actual release date in it
-                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$ReleaseDate", DateTime.Now.Date));
+                    sqLiteHeroDataCommand.Parameters.Add(new SQLiteParameter("$ReleaseDate", hero.Hero.ReleaseDate.Date));
                     sqLiteHeroDataCommand.ExecuteNonQuery();
 
                     foreach (var ability in hero.Abilities)
