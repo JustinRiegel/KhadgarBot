@@ -7,7 +7,7 @@ using System.Timers;
 using System.Windows.Threading;
 using TwitchLib.Models.Client;
 
-namespace KhadgarBot.Models
+namespace KhadgarBot.Models.Commands
 {
     public class ChatPollCommand : IChatCommand
     {

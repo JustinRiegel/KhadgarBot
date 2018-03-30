@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KhadgarBot.Models
 {
-    public class HeroData
+    public class HeroData : DbContext
     {
         public HeroData(Hero hero, List<Ability> abilities, List<Talent> talents)
         {
@@ -18,6 +19,11 @@ namespace KhadgarBot.Models
         public Hero Hero { get; }
         public List<Ability> Abilities { get; }
         public List<Talent> Talents { get; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Data Source=KhadgarBot.db");
+        }
     }
 
     public class Hero

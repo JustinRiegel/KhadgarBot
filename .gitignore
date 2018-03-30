@@ -287,3 +287,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 /KhadgarBot/Resources/loginInfo.xml
+/KhadgarBot/Models/Commands/NoUCommand.cs
