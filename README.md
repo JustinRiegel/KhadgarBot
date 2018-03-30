@@ -7,8 +7,8 @@ The logininfo.xml looks like
 
 \<root>
 
-  \<nick>username</nick>
+  \<nick>username \</nick>
   
-  \<pass>passkey</pass>
+  \<pass>passkey \</pass>
   
 \</root>
