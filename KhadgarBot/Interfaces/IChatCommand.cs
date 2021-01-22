@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchLib.Models.Client;
+﻿using System.Threading.Tasks;
+using TwitchLib.Client.Models;
 
 namespace KhadgarBot.Interfaces
 {
     interface IChatCommand
     {
         bool CanProcess(ChatMessage chatMessage);
+        Task<bool> CanProcessAsync(ChatMessage chatMessage);
     }
 }

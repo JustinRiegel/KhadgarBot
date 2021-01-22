@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using TwitchLib;
-using TwitchLib.Models.Client;
+using TwitchLib.Client;
+using TwitchLib.Client.Models;
 
 namespace KhadgarBot.Models
 {
@@ -14,7 +14,8 @@ namespace KhadgarBot.Models
             BotName = botNickname;
             OAuth = botOAuth;
             Credentials = new ConnectionCredentials(botNickname, botOAuth);
-            Client = new TwitchClient(Credentials);
+            Client = new TwitchClient();
+            Client.Initialize(Credentials);
         }
 
         #endregion
@@ -53,11 +54,12 @@ namespace KhadgarBot.Models
 
         #region DependencyProperties
 
-        public static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
-        public static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
-        public static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
-        private static readonly DependencyProperty ClientProperty = DependencyProperty.Register("Client", typeof(TwitchClient), typeof(KhadgarBotModel));
-        private static readonly DependencyProperty CredentialsProperty = DependencyProperty.Register("Credentials", typeof(ConnectionCredentials), typeof(KhadgarBotModel));
+        public static readonly DependencyProperty BotNameProperty = DependencyProperty.Register(nameof(BotName), typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty OAuthProperty = DependencyProperty.Register(nameof(OAuth), typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register(nameof(ChannelName), typeof(string), typeof(KhadgarBotModel), new PropertyMetadata(default(string)));
+        private static readonly DependencyProperty ClientProperty = DependencyProperty.Register(nameof(Client), typeof(TwitchClient), typeof(KhadgarBotModel));
+        //private static readonly DependencyProperty TwitchAPIProperty = DependencyProperty.Register(nameof(TwitchAPI), typeof(TwitchAPI), typeof(KhadgarBotModel));
+        private static readonly DependencyProperty CredentialsProperty = DependencyProperty.Register(nameof(Credentials), typeof(ConnectionCredentials), typeof(KhadgarBotModel));
 
         #endregion
 

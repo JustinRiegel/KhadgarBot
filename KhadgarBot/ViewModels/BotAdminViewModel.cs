@@ -1,18 +1,11 @@
 ﻿using KhadgarBot.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using KhadgarBot.Enums;
 using Prism.Commands;
-using TwitchLib.Events.Client;
-using TwitchLib.Models.Client;
-using TwitchLib;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using TwitchLib.Client.Models;
 
 namespace KhadgarBot.ViewModels
 {
@@ -38,7 +31,7 @@ namespace KhadgarBot.ViewModels
 
             BotName = _khadgarBotModel.BotName;
             OAuth = _khadgarBotModel.OAuth;
-            ChannelName = _khadgarBotModel.ChannelName ?? "ciarenni";
+            ChannelName = _khadgarBotModel.ChannelName ?? "raysfire";//"ciarenni";
             HasConnected = false;
             HasConnectedButNotJoined = false;
             HasJoined = false;
@@ -101,12 +94,12 @@ namespace KhadgarBot.ViewModels
 
         #region Dependency Properties
 
-        private static readonly DependencyProperty BotNameProperty = DependencyProperty.Register("BotName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
-        private static readonly DependencyProperty OAuthProperty = DependencyProperty.Register("OAuth", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
-        private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register("ChannelName", typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
-        private static readonly DependencyProperty HasConnectedProperty = DependencyProperty.Register("HasConnected", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
-        private static readonly DependencyProperty HasConnectedButNotJoinedProperty = DependencyProperty.Register("HasConnectedButNotJoined", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
-        private static readonly DependencyProperty HasJoinedProperty = DependencyProperty.Register("HasJoined", typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
+        private static readonly DependencyProperty BotNameProperty = DependencyProperty.Register(nameof(BotName), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
+        private static readonly DependencyProperty OAuthProperty = DependencyProperty.Register(nameof(OAuth), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
+        private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register(nameof(ChannelName), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
+        private static readonly DependencyProperty HasConnectedProperty = DependencyProperty.Register(nameof(HasConnected), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
+        private static readonly DependencyProperty HasConnectedButNotJoinedProperty = DependencyProperty.Register(nameof(HasConnectedButNotJoined), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
+        private static readonly DependencyProperty HasJoinedProperty = DependencyProperty.Register(nameof(HasJoined), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
 
         #endregion
 

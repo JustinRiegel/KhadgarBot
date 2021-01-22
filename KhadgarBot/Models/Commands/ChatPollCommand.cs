@@ -3,9 +3,9 @@ using KhadgarBot.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
-using System.Windows.Threading;
-using TwitchLib.Models.Client;
+using TwitchLib.Client.Models;
 
 namespace KhadgarBot.Models.Commands
 {
@@ -34,8 +34,13 @@ namespace KhadgarBot.Models.Commands
 
         #region Commands
 
-        //not totally happy with how i have this working now, i want to make it a bit cleaner to be able to accept multiple command strings with different permission levels
         public bool CanProcess(ChatMessage chatMessage)
+        {
+            return CanProcessAsync(chatMessage).Result;
+        }
+
+        //not totally happy with how i have this working now, i want to make it a bit cleaner to be able to accept multiple command strings with different permission levels
+        public async Task<bool> CanProcessAsync(ChatMessage chatMessage)
         {
             //have a killswitch for a poll in case it needs to be cut short
             if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
@@ -95,9 +100,7 @@ namespace KhadgarBot.Models.Commands
         #endregion
 
         #region Methods
-
-
-
+        
         private void onChatPollTimerElapsed(object sender, ElapsedEventArgs e)
         {
             _chatPollTimerIsRunning = false;
