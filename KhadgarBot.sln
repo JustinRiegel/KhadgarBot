@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhadgarBot", "KhadgarBot\KhadgarBot.csproj", "{3324F3F7-50F3-4333-A8BF-78B7582E97D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhadgarBot", "KhadgarBot\KhadgarBot.csproj", "{6351C466-323E-433F-8863-41E37EE56945}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3324F3F7-50F3-4333-A8BF-78B7582E97D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6351C466-323E-433F-8863-41E37EE56945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6351C466-323E-433F-8863-41E37EE56945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6351C466-323E-433F-8863-41E37EE56945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6351C466-323E-433F-8863-41E37EE56945}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D05525F8-96E3-418B-B377-A402F29D44A6}
+		SolutionGuid = {FBDBC6F7-C805-48C3-BFB8-8EA3538110A6}
 	EndGlobalSection
 EndGlobal

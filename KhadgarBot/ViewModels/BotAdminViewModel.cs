@@ -31,7 +31,7 @@ namespace KhadgarBot.ViewModels
 
             BotName = _khadgarBotModel.BotName;
             OAuth = _khadgarBotModel.OAuth;
-            ChannelName = _khadgarBotModel.ChannelName ?? "raysfire";//"ciarenni";
+            ChannelName = _khadgarBotModel.ChannelName;
             HasConnected = false;
             HasConnectedButNotJoined = false;
             HasJoined = false;
@@ -96,7 +96,7 @@ namespace KhadgarBot.ViewModels
 
         private static readonly DependencyProperty BotNameProperty = DependencyProperty.Register(nameof(BotName), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
         private static readonly DependencyProperty OAuthProperty = DependencyProperty.Register(nameof(OAuth), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
-        private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register(nameof(ChannelName), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata("ciarenni"));
+        private static readonly DependencyProperty ChannelNameProperty = DependencyProperty.Register(nameof(ChannelName), typeof(string), typeof(KhadgarBotViewModel), new PropertyMetadata(default(string)));
         private static readonly DependencyProperty HasConnectedProperty = DependencyProperty.Register(nameof(HasConnected), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
         private static readonly DependencyProperty HasConnectedButNotJoinedProperty = DependencyProperty.Register(nameof(HasConnectedButNotJoined), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
         private static readonly DependencyProperty HasJoinedProperty = DependencyProperty.Register(nameof(HasJoined), typeof(bool), typeof(KhadgarBotViewModel), new PropertyMetadata(false));
@@ -113,6 +113,7 @@ namespace KhadgarBot.ViewModels
         {
             //assuming the connect succeeds is bad, look into if the TwitchLib provides info on connection success
             _khadgarBotViewModel.ConnectToTwitch.Invoke();
+            //_khadgarBotViewModel.Model.Client.DisableAutoPong = false;
             HasConnected = true;
             HasConnectedButNotJoined = true;
         }

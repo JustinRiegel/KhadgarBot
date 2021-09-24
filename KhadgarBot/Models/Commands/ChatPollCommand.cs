@@ -43,7 +43,7 @@ namespace KhadgarBot.Models.Commands
         public async Task<bool> CanProcessAsync(ChatMessage chatMessage)
         {
             //have a killswitch for a poll in case it needs to be cut short
-            if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
+            if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
                 if (chatMessage.Message.Length >= 11 && chatMessage.Message.Substring(0, 11).ToLower() == "!cancelpoll" && _chatPollTimerIsRunning)
                 {
@@ -65,7 +65,7 @@ namespace KhadgarBot.Models.Commands
 
             //specifically allow me to run commands regardless of my permissions.
             //this is only for development and testing, it will be removed once the bot gets to a good place
-            if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.IsSubscriber || chatMessage.Username == "ciarenni"))
+            if (chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.IsSubscriber)
             {
                 if (chatMessage.Message.Length >= 9 && chatMessage.Message.Substring(0, 9).ToLower() == "!chatpoll" && !_chatPollTimerIsRunning)
                 {

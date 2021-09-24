@@ -54,7 +54,7 @@ namespace KhadgarBot.Models.Commands
             if (!_onCooldown)
             {
                 //have a killswitch for a poll in case it needs to be cut short
-                if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
+                if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
                 {
                     if (_predsTimerIsRunning && chatMessage.Message.Length >= 12 && chatMessage.Message.Substring(0, 12).ToLower() == "!cancelpreds")
                     {
@@ -70,7 +70,7 @@ namespace KhadgarBot.Models.Commands
 
                 //specifically allow me to run commands regardless of my permissions.
                 //this is only for development and testing, it will be removed once the bot gets to a good place
-                if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
+                if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
                 {
                     if (!_predsTimerIsRunning && chatMessage.Message.Length == 6 && chatMessage.Message.ToLower() == "!preds")
                     {
@@ -97,7 +97,7 @@ namespace KhadgarBot.Models.Commands
                 return true;
             }
 
-            if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
+            if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
                 if (!_predsTimerIsRunning && chatMessage.Message.Length >= 12 && chatMessage.Message.Substring(0, 12).ToLower() == "!predswinner" && !_winnerWasDeclared)
                 {
@@ -111,7 +111,7 @@ namespace KhadgarBot.Models.Commands
             }
 
             //TEST CODE
-            //if ((chatMessage.IsModerator || chatMessage.IsBroadcaster || chatMessage.Username == "ciarenni"))
+            //if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             //{
             //    if (!_predsTimerIsRunning && chatMessage.Message.Length == 6 && chatMessage.Message.ToLower() == "!preds")
             //    {

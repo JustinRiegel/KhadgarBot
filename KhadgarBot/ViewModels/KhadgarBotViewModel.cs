@@ -8,12 +8,12 @@ using KhadgarBot.Models.Commands;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-//using System.Data.SQLite;
 using KhadgarBot.Interfaces;
 using System.IO;
 using Newtonsoft.Json;
 using TwitchLib.Client.Events;
-using HtmlAgilityPack;
+//using HtmlAgilityPack;
+using HeroesInfoLibrary;
 
 namespace KhadgarBot.ViewModels
 {
@@ -29,6 +29,7 @@ namespace KhadgarBot.ViewModels
         
         private List<IChatCommand> _chatCommandList = new List<IChatCommand>();
         //private List<GDQScheduleData> _sechduleData = new List<GDQScheduleData>();
+        private HeroesLibrarian _heroesLibrarian;
 
         private bool _arePredsRunning = false;
         private string _connectedChannelName = string.Empty;
@@ -41,7 +42,7 @@ namespace KhadgarBot.ViewModels
         public KhadgarBotViewModel()
         {
             //grab the bot's login info from an xml file so sensitive info isn't publically posted
-            var xmlLoginInfo = XDocument.Load(@"..\..\Resources\loginInfo.xml");
+            var xmlLoginInfo = XDocument.Load(@"..\..\..\Resources\loginInfo.xml");
             var root = xmlLoginInfo.Descendants("root");
             var botNickname = root.Descendants("nick").First().Value;
             var botOAuth = root.Descendants("pass").First().Value;
@@ -52,6 +53,10 @@ namespace KhadgarBot.ViewModels
             Model = new KhadgarBotModel(botNickname, botOAuth);
             BotAdminViewModel = new BotAdminViewModel(this);
             CommandLogViewModel = new CommandLogViewModel(this);
+
+            _heroesLibrarian = new HeroesLibrarian("../../../../../Heroes-talents/heroes-talents-master/hero", "HeroesOfTheStormHeroData.db");
+            //var result = _heroesLibrarian.GetAbilityAndTalentDataByString("sand blast");
+            //var temp = 0;
 
             ChangeTabCallback = new DelegateCommand<object>(ExecuteChangeTab);
             ConnectToTwitch = new Action(ExecuteConnectToTwitch);
@@ -118,7 +123,7 @@ namespace KhadgarBot.ViewModels
 
         public Action<string> JoinChannel { get; set; }
 
-        public async void ExecuteJoinChannel(string channelName)
+        public void ExecuteJoinChannel(string channelName)
         {
             Model.Client.JoinChannel(channelName);
             //CurrentStream = await TwitchAPI.Streams.v5.GetStreamByUserAsync(channelName);
@@ -136,7 +141,7 @@ namespace KhadgarBot.ViewModels
 
         public void SendChatMessage(string message)
         {
-            Dispatcher.Invoke(new Action(() => { Model.Client.SendMessage(_connectedChannelName ?? "ciarenni", message); }));
+            Dispatcher.Invoke(new Action(() => { Model.Client.SendMessage(_connectedChannelName, message); }));
         }
 
         public void SendWhisper(string receivingUsername, string message)
@@ -190,6 +195,12 @@ namespace KhadgarBot.ViewModels
             //_chatCommandList.Add(new ChatPollCommand(this));
             //_chatCommandList.Add(new GdqRunnersCommand(this));
             _chatCommandList.Add(new PredsCommand(this));
+            _chatCommandList.Add(new HeroesInfoCommand(this));
+        }
+
+        public List<string> GetInfoFromHeroesLibrarian(string input)
+        {
+            return _heroesLibrarian.GetAbilityAndTalentDataByString(input);
         }
 
         //public void StartPreds()

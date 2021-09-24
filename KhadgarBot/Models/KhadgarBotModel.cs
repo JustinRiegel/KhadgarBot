@@ -67,11 +67,6 @@ namespace KhadgarBot.Models
 
         #region Methods
 
-        public void SetChannelName(string channelName)
-        {
-            ChannelName = channelName;
-        }
-
         #endregion
     }
 }
