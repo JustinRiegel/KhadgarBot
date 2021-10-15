@@ -5,7 +5,9 @@ namespace KhadgarBot.Interfaces
 {
     interface IChatCommand
     {
-        bool CanProcess(ChatMessage chatMessage);
-        Task<bool> CanProcessAsync(ChatMessage chatMessage);
+        //bool CanProcess(ChatMessage chatMessage);
+        //Task<bool> CanProcessAsync(ChatMessage chatMessage);
+
+        void ProcessMessage(ChatMessage chatMessage);
     }
 }

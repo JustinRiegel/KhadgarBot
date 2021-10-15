@@ -43,13 +43,13 @@ namespace KhadgarBot.Models.Commands
 
         #region Commands
 
-        public bool CanProcess(ChatMessage chatMessage)
-        {
-            return CanProcessAsync(chatMessage).Result;
-        }
+        //public bool CanProcess(ChatMessage chatMessage)
+        //{
+        //    return true;// CanProcessAsync(chatMessage).Result;
+        //}
 
         //not totally happy with how i have this working now, i want to make it a bit cleaner to be able to accept multiple command strings with different permission levels
-        public async Task<bool> CanProcessAsync(ChatMessage chatMessage)
+        public void ProcessMessage(ChatMessage chatMessage)
         {
             if (!_onCooldown)
             {
@@ -62,9 +62,9 @@ namespace KhadgarBot.Models.Commands
                         _onCooldown = false;
                         _winnerWasDeclared = false;
                         _predsTimer.Stop();
-                        _khadgarBotViewModel.SendChatMessage("Preds were canceled.");
+                        _khadgarBotViewModel.AddMessageToSendQueue("Preds were canceled.");
                         //_khadgarBotViewModel.StopPreds();
-                        return true;
+                        return;
                     }
                 }
 
@@ -76,13 +76,13 @@ namespace KhadgarBot.Models.Commands
                     {
                         _predsTimer.Interval = _predsTimerValue * 1000;
 
-                        _khadgarBotViewModel.SendChatMessage($"Enter your predictions now!  You have {_predsTimerValue.ToString()} seconds!");
+                        _khadgarBotViewModel.AddMessageToSendQueue($"Enter your predictions now!  You have {_predsTimerValue.ToString()} seconds!");
                         _predsTimer.Start();
                         _predsTimerIsRunning = true;
                         _winnerWasDeclared = false;
                         _predsEntries.Clear();
                         //_khadgarBotViewModel.StartPreds();
-                        return true;
+                        return;
                     }
                 }
 
@@ -94,7 +94,7 @@ namespace KhadgarBot.Models.Commands
             //(Regex.Match(chatMessage.Message, @"\d\d\.\d").Success || Regex.Match(chatMessage.Message, @"\d\d\.\d\d").Success))
             {
                 PredEntry(chatMessage.Username, userPred);
-                return true;
+                return;
             }
 
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
@@ -106,7 +106,7 @@ namespace KhadgarBot.Models.Commands
                         GetPredsWinner(actualTime);
                     }
                     //_khadgarBotViewModel.StartPreds();
-                    return true;
+                    return;
                 }
             }
 
@@ -123,7 +123,7 @@ namespace KhadgarBot.Models.Commands
             //    }
             //}
 
-            return false;
+            return;
         }
 
         #endregion
@@ -167,7 +167,7 @@ namespace KhadgarBot.Models.Commands
                 }
             }
             winnerMessage.Append("!");
-            _khadgarBotViewModel.SendChatMessage(winnerMessage.ToString());
+            _khadgarBotViewModel.AddMessageToSendQueue(winnerMessage.ToString());
             _winnerWasDeclared = true;
         }
 
@@ -186,11 +186,11 @@ namespace KhadgarBot.Models.Commands
 
             if (_predsEntries.Count == 0)
             {
-                _khadgarBotViewModel.SendChatMessage("No preds were made.");
+                _khadgarBotViewModel.AddMessageToSendQueue("No preds were made.");
             }
             else
             {
-                _khadgarBotViewModel.SendChatMessage("Prediction entries are now closed!  Good luck!");
+                _khadgarBotViewModel.AddMessageToSendQueue("Prediction entries are now closed!  Good luck!");
 
                 //TEST CODE
                 //StringBuilder resultsBuilder = new StringBuilder();

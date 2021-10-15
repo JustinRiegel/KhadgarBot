@@ -113,7 +113,7 @@ namespace KhadgarBot.ViewModels
         {
             //assuming the connect succeeds is bad, look into if the TwitchLib provides info on connection success
             _khadgarBotViewModel.ConnectToTwitch.Invoke();
-            //_khadgarBotViewModel.Model.Client.DisableAutoPong = false;
+            _khadgarBotViewModel.Model.Client.DisableAutoPong = false;
             HasConnected = true;
             HasConnectedButNotJoined = true;
         }
@@ -122,10 +122,13 @@ namespace KhadgarBot.ViewModels
 
         public void ExecuteJoinChannel()
         {
-            //assuming the join succeeds is bad, look into if the TwitchLib provides info on join success
-            _khadgarBotViewModel.JoinChannel.Invoke(ChannelName);
-            HasConnectedButNotJoined = false;
-            HasJoined = true;
+            if (!string.IsNullOrEmpty(ChannelName))
+            {
+                //assuming the join succeeds is bad, look into if the TwitchLib provides info on join success
+                _khadgarBotViewModel.JoinChannel.Invoke(ChannelName);
+                HasConnectedButNotJoined = false;
+                HasJoined = true;
+            }
         }
 
         public DelegateCommand LeaveChannel { get; set; }
