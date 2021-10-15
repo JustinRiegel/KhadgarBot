@@ -41,7 +41,7 @@ namespace KhadgarBot.Models.Commands
 
         public void ProcessMessage(ChatMessage chatMessage)
         {
-            var matches = Regex.Matches(chatMessage.Message, @"\[\[((\w+\/\w+)|([\w\s]+))\]\]");
+            var matches = Regex.Matches(chatMessage.Message, @"\[\[(([\w\']+\/[\w\']+)|([\w\s\']+))\]\]");
             var results = new List<string>();
             var messageAdded = false;
             _infoRequestList.Clear();
